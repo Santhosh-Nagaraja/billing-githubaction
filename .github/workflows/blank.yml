@@ -34,7 +34,8 @@ jobs:
      
       
   send-job:
-    if: github.event_name == 'push' && needs.first-job.outputs.skip == 'true'
+    #if: github.event_name == 'push' && needs.first-job.outputs.skip == 'true'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/devops'
     runs-on: ubuntu-latest
 
     steps:
