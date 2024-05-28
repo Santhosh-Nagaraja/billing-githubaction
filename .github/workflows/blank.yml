@@ -1,12 +1,14 @@
-name: CI Pipeline
+name: Billing-App
 
 on:
+  pull_request:
+    types: [closed]
+    branches:
+      - devops
+  workflow_dispatch:
   push:
     branches:
-      - '**'  # Triggers on any push
-  pull_request:
-    types:
-      - closed  # Triggers on merge event
+      - devops
 
 jobs:
   merge_job:
