@@ -22,7 +22,7 @@ jobs:
         run: echo "This job runs on merge events."
 
   push_job:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.event.head_commit.message != 'Automated update'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
