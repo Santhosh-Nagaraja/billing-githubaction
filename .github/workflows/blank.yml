@@ -1,45 +1,30 @@
-name: Billing-App
+name: CI Pipeline
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
-  workflow_dispatch:
   push:
     branches:
-      - devops
-
-env:
-  image_version: ${{ github.run_number }}
+      - '**'  # Triggers on any push
+  pull_request:
+    types:
+      - closed  # Triggers on merge event
 
 jobs:
-  terraform:
-    if: ${{ github.event.pull_request.merged == true }}
+  merge_job:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.5
+      - name: Merge Job
+        run: echo "This job runs on merge events."
 
-      - name: Output
-        run: echo "Successfully Created....!!!!!"
-
-      
-  send-job:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devops' }}
+  push_job:
+    if: github.event.pull_request.merged != true
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Run second job steps
-        run: |
-          echo "Running steps in the second job..."
-          # Add your steps here
+      - name: Push Job
+        run: echo "This job runs on push events."
