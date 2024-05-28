@@ -6,9 +6,7 @@ on:
     branches:
       - devops
   workflow_dispatch:
-  push:
-    branches:
-      - devops
+  
 
 jobs:
   merge_job:
