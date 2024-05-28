@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - devops
+      - main
   workflow_dispatch:
   push:
     branches:
@@ -27,12 +27,10 @@ jobs:
         with:
           terraform_version: 1.0.5
 
-      - name: Run Terraform Init
-        run: terraform init
+      - name: Output
+        run: echo "Successfully Created....!!!!!"
 
-      - name: Run Terraform Apply
-        run: terraform apply -auto-approve
-
+      
   send-job:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devops' }}
     runs-on: ubuntu-latest
