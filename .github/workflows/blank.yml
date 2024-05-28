@@ -15,7 +15,7 @@ env:
 
 jobs:
   terraform:
-    if: github.event.pull_request.merged == true
+    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -27,11 +27,14 @@ jobs:
         with:
           terraform_version: 1.0.5
 
-      - name: Echo
-        run: echo "hello world"
+      - name: Run Terraform Init
+        run: terraform init
+
+      - name: Run Terraform Apply
+        run: terraform apply -auto-approve
 
   send-job:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/devops'
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/devops' }}
     runs-on: ubuntu-latest
 
     steps:
