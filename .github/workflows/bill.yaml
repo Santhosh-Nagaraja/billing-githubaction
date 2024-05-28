@@ -4,27 +4,29 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - devops
-  workflow_dispatch:
-  
+      - devops # Trigger workflow when a pull request to the 'devops' branch is closed
+  workflow_dispatch: # Allow manual triggering of the workflow
+  push:
+    branches:
+      - devops # Trigger workflow on push events to the 'devops' branch
 
 jobs:
   merge_job:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true # Run this job only if a pull request is merged
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Merge Job
-        run: echo "This job runs on merge events."
+        run: echo "This job runs on merge events." # Indicate job runs on merge events
 
   push_job:
-    if: github.event_name == 'push' && github.event.head_commit.message != 'Automated update'
+    if: github.event_name == 'push' && github.event.head_commit.message != 'Automated update' # Run job on push events excluding specific commit messages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Push Job
-        run: echo "This job runs on push events."
+        run: echo "This job runs on push events." # Indicate job runs on push events
