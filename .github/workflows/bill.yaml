@@ -16,17 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Merge Job
         run: echo "This job runs on merge events." # Indicate job runs on merge events
 
   push_job:
-    if: github.event_name == 'push' && github.event.head_commit.message != 'Automated update' # Run job on push events excluding specific commit messages
+    if: github.event_name == 'push' && !contains(github.event.head_commit.message, '[ci skip]') # Run job on push events excluding specific commit messages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Push Job
-        run: echo "This job runs on push events." # Indicate job runs on push events
+        run: echo "This job runs on push events from local terminal." # Indicate job runs on push events from local terminal
