@@ -28,5 +28,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Push Job
-        run: echo "This job runs on push events from local terminal." # Indicate job runs on push events from local terminal
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.6.6   # Specify the desired Terraform version
+
+      - name: Terraform Init
+        working-directory: ./client-folder
+        run: terraform init
+      
+      - name: Terraform Format
+        working-directory: ./client-folder
+        run: terraform fmt
+         
+      - name: Terraform Validation
+        working-directory: ./client-folder
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ./client-folder
+        run: terraform plan
