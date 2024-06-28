@@ -4,6 +4,7 @@ provider "google" {
   credentials = file("./creden.json")
 }
 
+
 terraform {
   required_providers {
     google = {
@@ -12,7 +13,7 @@ terraform {
     }
   }
 }
-
+ 
 resource "google_cloud_run_service" "default" {
   name     = "cloudrun-srv"
   location = "us-central1"
