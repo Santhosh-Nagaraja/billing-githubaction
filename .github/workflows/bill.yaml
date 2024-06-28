@@ -12,7 +12,7 @@ on:
 
 jobs:
   merge_job:
-    if: github.actor == 'arun-selva-02136' || github.actor == 'Santhosh-Nagarajan' && github.event.pull_request.merged == true # Run this job only if a pull request is merged
+    if: github.actor == 'Santhosh-Nagarajan' && github.event.pull_request.merged == true # Run this job only if a pull request is merged
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
