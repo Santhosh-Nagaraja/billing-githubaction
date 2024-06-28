@@ -3,7 +3,7 @@ provider "google" {
   region      = "us-central1"
   credentials = file("./creden.json")
 }
-
+ 
 
 terraform {
   required_providers {
