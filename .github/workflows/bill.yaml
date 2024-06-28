@@ -1,4 +1,4 @@
-name: Billing-App
+name: Conditional Jobs
 
 on:
   pull_request:
@@ -7,9 +7,33 @@ on:
       - devops # Trigger workflow when a pull request to the 'devops' branch is closed
   workflow_dispatch: # Allow manual triggering of the workflow
 
+
 jobs:
-  merge_with_ci_skip:
-    if: github.actor == 'Santhosh-Nagaraja' && github.event.pull_request.merged == true # Run this job only if a pull request is merged and contains '[ci skip]' in the commit message
+  check-commit-message:
+    if: ${{ github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+    outputs:
+      skip_job: ${{ steps.check.outputs.skip_job }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get merge commit message
+        id: get_commit_message
+        run: echo "::set-output name=message::${{ github.event.pull_request.title }}"
+
+      - name: Check commit message
+        id: check
+        run: |
+          if [[ "${{ steps.get_commit_message.outputs.message }}" == *"skip the job"* ]]; then
+            echo "::set-output name=skip_job::true"
+          else
+            echo "::set-output name=skip_job::false"
+          fi
+
+  first-job:
+    needs: check-commit-message
+    if: ${{ needs.check-commit-message.outputs.skip_job == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -30,10 +54,10 @@ jobs:
       - name: Terraform Plan
         working-directory: ./client-folder
         run: terraform plan
-     
 
-  merge_without_ci_skip:
-    if: github.actor == 'Santhosh-Nagaraja' && github.event.pull_request.merged == true && !contains(github.event.pull_request.head_commit.message, '[ci skip]') # Run this job only if a pull request is merged and does not contain '[ci skip]' in the commit message
+  second-job:
+    needs: check-commit-message
+    if: ${{ needs.check-commit-message.outputs.skip_job == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
