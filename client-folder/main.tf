@@ -10,7 +10,7 @@ terraform {
       source = "hashicorp/google"
       version = "5.31.1"
     }
-  }
+  } 
 }
  
 resource "google_cloud_run_service" "default" {
