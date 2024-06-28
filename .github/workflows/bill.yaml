@@ -17,9 +17,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      
+      - name: Terraform Init
+        working-directory: ./client-folder
+        run: terraform init
 
-      - name: Merge Job
-        run: echo "This job runs on merge events." # Indicate job runs on merge events
+      - name: Terraform Format
+        working-directory: ./client-folder
+        run: terraform fmt
+
+      - name: Terraform Validation
+        working-directory: ./client-folder
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: ./client-folder
+        run: terraform plan
+     
 
   push_job:
     if: github.actor == 'Santhosh-Nagaraja' && github.event_name == 'push' && !contains(github.event.head_commit.message, '[ci skip]') # Run job on push events excluding specific commit messages
@@ -34,17 +48,17 @@ jobs:
           terraform_version: 1.6.6   # Specify the desired Terraform version
 
       - name: Terraform Init
-        working-directory: ./client-folder
+        working-directory: ./develop-folder
         run: terraform init
       
       - name: Terraform Format
-        working-directory: ./client-folder
+        working-directory: ./develop-folder
         run: terraform fmt
          
       - name: Terraform Validation
-        working-directory: ./client-folder
+        working-directory: ./develop-folder
         run: terraform validate
 
       - name: Terraform Plan
-        working-directory: ./client-folder
+        working-directory: ./develop-folder
         run: terraform plan
