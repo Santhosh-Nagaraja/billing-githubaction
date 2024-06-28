@@ -21,15 +21,15 @@ jobs:
 
       - name: Get merge commit message
         id: get_commit_message
-        run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
+        run: echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
 
       - name: Check commit message
         id: check
         run: |
-          if [[ "${{ steps.get_commit_message.outputs.message }}" == *"skip the job"* ]]; then
-            echo "::set-output name=skip_job::true"
+          if [[ "${{ env.message }}" == *"skip the job"* ]]; then
+            echo "skip_job=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=skip_job::false"
+            echo "skip_job=false" >> $GITHUB_ENV
           fi
 
   first-job:
