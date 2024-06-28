@@ -4,6 +4,7 @@ provider "google" {
   credentials = file("./creden.json")
 }
 
+
 terraform {
   required_providers {
     google = {
