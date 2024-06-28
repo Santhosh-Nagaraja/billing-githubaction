@@ -12,7 +12,7 @@ on:
 
 jobs:
   merge_job:
-    if: github.actor == 'Santhosh-Nagarajan' && github.event.pull_request.merged == true # Run this job only if a pull request is merged
+    if: github.actor == 'Santhosh-Nagaraja' && github.event.pull_request.merged == true # Run this job only if a pull request is merged
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -22,7 +22,7 @@ jobs:
         run: echo "This job runs on merge events." # Indicate job runs on merge events
 
   push_job:
-    if: github.actor == 'arun-selva-02136' && github.event_name == 'push' && !contains(github.event.head_commit.message, '[ci skip]') # Run job on push events excluding specific commit messages
+    if: github.actor == 'Santhosh-Nagaraja' && github.event_name == 'push' && !contains(github.event.head_commit.message, '[ci skip]') # Run job on push events excluding specific commit messages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
