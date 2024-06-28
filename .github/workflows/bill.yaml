@@ -7,9 +7,8 @@ on:
       - devops # Trigger workflow when a pull request to the 'devops' branch is closed
   workflow_dispatch: # Allow manual triggering of the workflow
 
-
 jobs:
-  check-commit-message:
+  check-merge-status:
     if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     outputs:
@@ -18,22 +17,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get merge commit message
-        id: get_commit_message
-        run: echo "::set-output name=message::${{ github.event.pull_request.title }}"
+      - name: Get merge status
+        id: get_merge_status
+        run: echo "::set-output name=merged::${{ github.event.pull_request.merged }}"
 
-      - name: Check commit message
+      - name: Check merge status
         id: check
         run: |
-          if [[ "${{ steps.get_commit_message.outputs.message }}" == *"skip the job"* ]]; then
-            echo "::set-output name=skip_job::true"
-          else
+          if [[ "${{ steps.get_merge_status.outputs.merged }}" == "true" ]]; then
             echo "::set-output name=skip_job::false"
+          else
+            echo "::set-output name=skip_job::true"
           fi
 
   first-job:
-    needs: check-commit-message
-    if: ${{ needs.check-commit-message.outputs.skip_job == 'true' }}
+    needs: check-merge-status
+    if: ${{ needs.check-merge-status.outputs.skip_job == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -56,8 +55,8 @@ jobs:
         run: terraform plan
 
   second-job:
-    needs: check-commit-message
-    if: ${{ needs.check-commit-message.outputs.skip_job == 'false' }}
+    needs: check-merge-status
+    if: ${{ needs.check-merge-status.outputs.skip_job == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
