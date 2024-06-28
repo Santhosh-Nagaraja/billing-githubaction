@@ -7,7 +7,6 @@ on:
       - devops # Trigger workflow when a pull request to the 'devops' branch is closed
   workflow_dispatch: # Allow manual triggering of the workflow
 
-
 jobs:
   check-commit-message:
     if: ${{ github.event.pull_request.merged == true }}
@@ -20,7 +19,7 @@ jobs:
 
       - name: Get merge commit message
         id: get_commit_message
-        run: echo "::set-output name=message::${{ github.event.pull_request.title }}"
+        run: echo "::set-output name=message::${{ github.event.pull_request.head_commit.message }}"
 
       - name: Check commit message
         id: check
