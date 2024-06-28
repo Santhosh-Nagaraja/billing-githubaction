@@ -9,7 +9,7 @@ on:
 
 jobs:
   merge_with_ci_skip:
-    if: github.actor == 'Santhosh-Nagaraja' && github.event.pull_request.merged == true && contains(github.event.pull_request.head_commit.message, '[ci skip]') # Run this job only if a pull request is merged and contains '[ci skip]' in the commit message
+    if: github.actor == 'Santhosh-Nagaraja' && github.event.pull_request.merged == true # Run this job only if a pull request is merged and contains '[ci skip]' in the commit message
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
