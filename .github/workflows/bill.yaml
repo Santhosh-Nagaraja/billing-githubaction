@@ -4,9 +4,8 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - release # Trigger workflow when a pull request to the 'devops' branch is closed
+      - release # Trigger workflow when a pull request to the 'release' branch is closed
   workflow_dispatch: # Allow manual triggering of the workflow
-
 
 jobs:
   check-commit-message:
@@ -20,21 +19,18 @@ jobs:
 
       - name: Get merge commit message
         id: get_commit_message
-        #run: echo "::set-output name=message::${{ github.event.pull_request.title }}"
         run: |
           MERGE_COMMIT_SHA=$(jq -r '.pull_request.merge_commit_sha' < $GITHUB_EVENT_PATH)
           MERGE_COMMIT_MESSAGE=$(git log -1 --format=%B $MERGE_COMMIT_SHA)
-          echo "::set-output name=message::$MERGE_COMMIT_MESSAGE"
-          #echo "Merge commit message: $MERGE_COMMIT_MESSAGE"
+          echo "message=$MERGE_COMMIT_MESSAGE" >> $GITHUB_ENV
 
       - name: Check commit message
         id: check
         run: |
-          if [[ "${{ steps.get_commit_message.outputs.message }}" == *"skip the job"* ]]; then
-            echo "::set-output name=skip_job::true"
+          if [[ "${{ env.message }}" == *"skip the job"* ]]; then
+            echo "skip_job=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=skip_job::false"
-          fi
+            echo "skip_job=false" >> $GITHUB_ENV
 
   first-job:
     needs: check-commit-message
