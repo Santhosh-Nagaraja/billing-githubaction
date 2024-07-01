@@ -27,7 +27,7 @@ jobs:
       - name: Check commit message
         id: check
         run: |
-          if [[ "${{ steps.get_commit_message.outputs.message }}" == *"skip the job"* ]]; then
+          if [[ "$(git log -1 --pretty=%B)" == *"skip the job"* ]]; then
             echo "::set-output name=skip_job::true"
           else
             echo "::set-output name=skip_job::false"
