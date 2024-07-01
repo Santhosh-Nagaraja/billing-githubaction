@@ -32,8 +32,6 @@ jobs:
             echo "skip_job=true" >> $GITHUB_ENV
           else
             echo "skip_job=false" >> $GITHUB_ENV
-        outputs:
-          skip_job: ${{ steps.check.outputs.skip_job }}
 
   first-job:
     needs: check-commit-message
