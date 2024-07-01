@@ -22,13 +22,8 @@ jobs:
 
       - name: Get merge commit message
         id: get_commit_message
-        #run: echo "::set-output name=message::${{ github.event.pull_request.title }}"
-        run: |
-          MERGE_COMMIT_SHA=$(jq -r '.pull_request.merge_commit_sha' < $GITHUB_EVENT_PATH)
-          MERGE_COMMIT_MESSAGE=$(git log -1 --format=%s $MERGE_COMMIT_SHA)
-          # echo "Merge commit message: $MERGE_COMMIT_MESSAGE"
-          echo "merge commit sha : $MERGE_COMMIT_SHA"
-          echo "::set-output name=message::$MERGE_COMMIT_MESSAGE"
+        run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
+    
       - name: Check commit message
         id: check
         run: |
