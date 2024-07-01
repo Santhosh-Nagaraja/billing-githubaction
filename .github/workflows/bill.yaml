@@ -22,7 +22,7 @@ jobs:
         run: |
           MERGE_COMMIT_SHA=$(jq -r '.pull_request.merge_commit_sha' < $GITHUB_EVENT_PATH)
           MERGE_COMMIT_MESSAGE=$(git log -1 --format=%B $MERGE_COMMIT_SHA)
-          echo "message=$MERGE_COMMIT_MESSAGE" >> $GITHUB_ENV
+          printf "message=%s\n" "$MERGE_COMMIT_MESSAGE" >> $GITHUB_ENV
 
       - name: Check commit message
         id: check
