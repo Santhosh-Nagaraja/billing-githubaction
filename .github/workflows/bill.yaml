@@ -17,17 +17,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Get merge commit message
         id: get_commit_message
+        #run: echo "::set-output name=message::${{ github.event.pull_request.title }}"
         run: |
-          # Fetch the merge commit
-          git fetch origin release
-          # Get the latest commit message
-          MERGE_COMMIT_MESSAGE=$(git log -1 --pretty=format:"%s")
-          echo "Merge commit message: $MERGE_COMMIT_MESSAGE"
-          # Optionally set the commit message as an output for further steps
-          echo "::set-output name=message::$MERGE_COMMIT_MESSAGE"
-          # echo "::set-output name=message::$MERGE_COMMIT_MESSAGE"
+          MERGE_COMMIT_SHA=$(jq -r '.pull_request.merge_commit_sha' < $GITHUB_EVENT_PATH)
+          MERGE_COMMIT_MESSAGE=$(git log -1 --format=%B $MERGE_COMMIT_SHA)
+          echo "::set-output name=message::${{ MERGE_COMMIT_MESSAGE }}"
+          #echo "Merge commit message: $MERGE_COMMIT_MESSAGE"
 
       - name: Check commit message
         id: check
