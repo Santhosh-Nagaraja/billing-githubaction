@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - devops # Trigger workflow when a pull request to the 'devops' branch is closed
+      - release # Trigger workflow when a pull request to the 'devops' branch is closed
   workflow_dispatch: # Allow manual triggering of the workflow
 
 
