@@ -9,7 +9,7 @@ on:
 
 jobs:
   check-commit-message:
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     outputs:
       skip_job: ${{ steps.check.outputs.skip_job }}
@@ -22,16 +22,18 @@ jobs:
 
       - name: Get merge commit message
         id: get_commit_message
-        run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
+        run: echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
     
       - name: Check commit message
         id: check
         run: |
           CHECKCOM=$(git log -1 --pretty=%B)
-          if [[ "${{ CHECKCOM }}" == *"skip the job"* ]]; then
-            echo "::set-output name=skip_job::true"
+          if [[ "$CHECKCOM" == *"skip the job"* ]]; then
+            echo "skip_job=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=skip_job::false"
+            echo "skip_job=false" >> $GITHUB_ENV
+        outputs:
+          skip_job: ${{ steps.check.outputs.skip_job }}
 
   first-job:
     needs: check-commit-message
