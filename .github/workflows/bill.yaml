@@ -1,3 +1,5 @@
+# This is a basic workflow to help you get started with Actions
+ 
 name: Billing-App
  
 # Controls when the workflow will run
@@ -37,8 +39,7 @@ jobs:
       - name: Terraform Plan -var image_tag=${image_version}
         run: terraform plan        
  
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -var image_tag=${image_version}
+      
 
   push_image_cloud_run_cofigure_docker_image:
     if: github.actor == 'Santhosh-Nagaraja' && github.event_name == 'push' && !contains(github.event.head_commit.message, '[ci skip]') # Run job on push events excluding specific commit messages
@@ -68,4 +69,4 @@ jobs:
         working-directory: ./client-folder
         run: terraform plan
 
-       
+     
