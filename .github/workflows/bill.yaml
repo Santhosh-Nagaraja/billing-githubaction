@@ -1,68 +1,47 @@
-name: Conditional Jobs
-
+name: Billing-App
+ 
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
   pull_request:
     types: [closed]
     branches:
-      - release # Trigger workflow when a pull request to the 'release' branch is closed
-  workflow_dispatch: # Allow manual triggering of the workflow
-
+      - release
+ 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+env:
+    image_version: ${{ github.run_number }}
+ 
 jobs:
-  check-commit-message:
-    if: ${{ github.event.pull_request.merged }}
+  push_image_new_cloud_run_create:
+    if:
+      github.actor == 'Santhosh-Nagaraja' && github.event.pull_request.merged == true # Run this job only if a pull request is merged
     runs-on: ubuntu-latest
-    outputs:
-      skip_job: ${{ steps.check.outputs.skip_job }}
+ 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Get merge commit message
-        id: get_commit_message
-        run: |
-          COMCHECK=$(git log -1 --pretty=%s)
-          echo "com check : $COMCHECK"
-          echo "::set-output name=message::$(git log -1 --pretty=%s)"
-    
-      - name: Check commit message
-        id: check
-        run: |
-          CHECKCOM=$(git log -1 --pretty=%s)
-          if [[ "$CHECKCOM" == *"skip the job"* ]]; then
-            echo "::set-output name=skip_job::true"
-          else
-            echo "::set-output name=skip_job::false"
-
-  first-job:
-    needs: check-commit-message
-    if: ${{ needs.check-commit-message.outputs.skip_job == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
+ 
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.6.6   # Specify the desired Terraform version
+ 
       - name: Terraform Init
-        working-directory: ./client-folder
         run: terraform init
-
-      - name: Terraform Format
-        working-directory: ./client-folder
-        run: terraform fmt
-
+ 
       - name: Terraform Validation
-        working-directory: ./client-folder
         run: terraform validate
+ 
+      - name: Terraform Plan -var image_tag=${image_version}
+        run: terraform plan        
+ 
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var image_tag=${image_version}
 
-      - name: Terraform Plan
-        working-directory: ./client-folder
-        run: terraform plan
-
-  second-job:
-    needs: check-commit-message
-    if: ${{ needs.check-commit-message.outputs.skip_job == 'false' }}
+  push_image_cloud_run_cofigure_docker_image:
+    if: github.actor == 'Santhosh-Nagaraja' && github.event_name == 'push' && !contains(github.event.head_commit.message, '[ci skip]') # Run job on push events excluding specific commit messages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -74,17 +53,19 @@ jobs:
           terraform_version: 1.6.6   # Specify the desired Terraform version
 
       - name: Terraform Init
-        working-directory: ./develop-folder
+        working-directory: ./client-folder
         run: terraform init
       
       - name: Terraform Format
-        working-directory: ./develop-folder
+        working-directory: ./client-folder
         run: terraform fmt
          
       - name: Terraform Validation
-        working-directory: ./develop-folder
+        working-directory: ./client-folder
         run: terraform validate
 
       - name: Terraform Plan
-        working-directory: ./develop-folder
+        working-directory: ./client-folder
         run: terraform plan
+
+       
